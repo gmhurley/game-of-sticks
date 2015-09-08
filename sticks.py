@@ -4,8 +4,7 @@ from itertools import cycle
 def get_num_sticks():
     while True:
         try:
-            sticks = int(input("How many sticks are there on the table "
-                               "initially (10-100)? "))
+            sticks = int(input("How many sticks are there on the table initially (10-100)? "))
         except ValueError:
             print("That's not a number!\n")
         else:
@@ -18,8 +17,7 @@ def get_num_sticks():
 def player_turn(player):
     while True:
         try:
-            selection = int(input("{}: How many sticks do you take "
-                                  "(1-3)? ".format(player)))
+            selection = int(input("{}: How many sticks do you take (1-3)? ".format(player)))
         except ValueError:
             print("That's not a number!\n")
         else:
