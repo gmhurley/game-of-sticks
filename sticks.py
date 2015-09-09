@@ -1,6 +1,17 @@
+import pickle
 import random
 
 from itertools import cycle
+
+
+def load_ai_dict():
+    with open('ai_guesses.pickle', 'rb') as handle:
+        return pickle.load(handle)
+
+
+def save_ai_dict(ai_dict):
+    with open('ai_guesses.pickle', 'wb') as handle:
+        pickle.dump(ai_dict, handle)
 
 
 def get_num_sticks():
@@ -60,8 +71,25 @@ def player_turn(player):
                 print("Need a number between 1 and 3 please.\n")
 
 
+def update_ai_dict(player_type, ai_dict, ai_picks):
+    if player_type == '2':
+        for k, v in ai_picks.items():
+            if len(ai_dict[k]) > 1:
+                ai_dict[k].remove()
+            else:
+                ai_dict[k] = random.choice([1, 2, 3])
+    else:
+        for k, v in ai_picks.items():
+            ai_dict[k].append(v)
+
+    return ai_dict
+
+
 def play(sticks, players):
     player_list = [x['Type'] + x['Name'] for x in players.values()]
+    ai_dict = load_ai_dict()
+    print(ai_dict)
+    ai_picks = {}
     # http://stackoverflow.com/questions/21884119/how-to-alternate-between-two-players
     for player in cycle(player_list):
         player_name = player[1:]
@@ -73,12 +101,15 @@ def play(sticks, players):
         if player_type == '1':
             pick = player_turn(player_name)
         else:
-            pick = random.choice([1, 3])
+            pick = random.choice(ai_dict[sticks])
+            ai_picks[sticks] = pick
             print("{} picked {} sticks.".format(player_name, pick))
         if pick > sticks:
             continue
         sticks -= pick
         if sticks == 0:
+            ai_dict = update_ai_dict(player_type, ai_dict, ai_picks)
+            save_ai_dict(ai_dict)
             print("\n{}, you lose.".format(player_name))
             break
 
