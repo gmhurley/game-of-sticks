@@ -113,7 +113,25 @@ def check_pick(sticks, pick):
         return True
 
 
+def which_ai():
+    """
+    Rookie = easy = any ol' number between 1 and 3 will be used.
+    Veteran = hard = ai will use it's dict cheat sheet.
+    """
+    while True:
+        try:
+            selection = int(input("\nSelect AI:\n1. Rookie\n2. Veteran\n>>> "))
+        except ValueError:
+            print("That's not a number!\n")
+        else:
+            if selection in (1, 2):
+                return selection
+            else:
+                print("Pick 1 or 2.\n")
+
+
 def play(sticks, players):
+    difficulty = which_ai()  # 1 = easy, 2 = hard
     player_list = [x['Type'] + x['Name'] for x in players.values()]
     ai_dict = load_ai_dict()
     ai_picks = {}
@@ -135,15 +153,20 @@ def play(sticks, players):
                 if sticks == 1:
                     pick = 1
                 else:
-                    pick = random.choice(ai_dict[sticks])
+                    if difficulty == 1:
+                        pick = random.choice([1, 2, 3])
+                    else:
+                        pick = random.choice(ai_dict[sticks])
                 if check_pick(sticks, pick):
                     break
-            ai_picks[sticks] = pick
+            if difficulty == 2:
+                ai_picks[sticks] = pick
             print("{} picked {} sticks.".format(player_name, pick))
         sticks -= pick
         if sticks == 0:
-            ai_dict = update_ai_dict(player_type, ai_dict, ai_picks)
-            save_ai_dict(ai_dict)
+            if difficulty == 2:
+                ai_dict = update_ai_dict(player_type, ai_dict, ai_picks)
+                save_ai_dict(ai_dict)
             print("\n{}, you lose.\n\n".format(player_name))
             break
 
